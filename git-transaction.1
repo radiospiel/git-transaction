@@ -1,0 +1,81 @@
+.TH "GIT\-TRANSACTION"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+git-transaction \- Adds transactions to git
+.SH "SYNOPSIS"
+
+git-transaction [ -b basedir ] [ --readonly ] [ --no-symlinks ] [ -m message ] [ -v ] command ...
+
+.SH "DESCRIPTION"
+.sp
+Checks out a the current repository into a temporary repository, chdirs into that repository,
+runs the command, and commits the changes. If <command> fails no changes will be committed
+back into the repository.
+
+This is probably not useful for interactive workflows, but can be of tremendous help for
+automated data processing which uses git to some extent.
+
+.SH "OPTIONS"
+
+.PP
+\-\-basedir, \-b <basedir>
+.RS 4
+Create the temporary repository below this directory. (Default: $TMPDIR)
+.RE
+.PP
+\-\-readonly, \-r
+.RS 4
+Do not commit changes back into the repository.
+.RE
+.PP
+\-\-message, \-m <s>
+.RS 4
+Commit message
+.RE
+.PP
+\-\-verbose, \-v
+.RS 4
+Be verbose
+.RE
+.PP
+\-\-skip\-mtimes, \-s
+.RS 4
+Don't sync mtimes
+.RE
+.PP
+\-\-debug, \-D
+.RS 4
+Be more verbose
+.RE
+.PP
+\-\-help, \-h
+.RS 4
+Show help message
+.RE
+        
+.SH "EXAMPLES"
+.PP
+git-transaction ls
+.RS 4
+runs ls in a freshly checked out copy of the current repository.
+.RE
+.PP
+git-transaction sh -c "date > NOW" 
+.RS 4
+sets a timespan in a local NOW file.
+.RE
+.SH "GIT"
+.sp
+This script is not part of the \fBgit\fR(1) suite. Get the current version of 
+git-transaction from https://github.com/radiospiel/git-transaction.

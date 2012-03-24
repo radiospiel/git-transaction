@@ -22,9 +22,7 @@ databases.
 
 Installing is as easy as
 
-    cp git-transaction /usr/local/bin
-
-or just run `rake install`, which does just that.
+    make install
 
 ## Examples
 
