@@ -83,10 +83,15 @@ rescue Error
 end
 
 def diff?
-  git! "diff", "--quiet"
-  false
-rescue RuntimeError
-  true
+  # For what its worth the first call to "git diff --quiet" sometimes returns 
+  # no changes, even if there are changes. An example for this behaviour is
+  #
+  #   git-transaction sh -c "cat NOW; date > NOW; cat NOW"
+  #
+  # on my machine (OSX Lion). Probably something to do with some caching
+  # in the shell? NOW not yet closed? Anyways, running "git --diff" instead
+  # seems to solve the issue - we cannot use the return code though.
+  `git diff` != ""
 end
 
 def unstaged_files?
