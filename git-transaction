@@ -11,7 +11,7 @@ eval File.read(__FILE__).split("__END__").last
 
 OPTIONS = Trollop::options do
   banner <<-EOS
-git! transaction [ -b basedir ] [ --readonly ] [ --no-symlinks ] [ -m message ] [ -v ] command ...
+git transaction [ -b basedir ] [ --readonly ] [ --no-symlinks ] [ -m message ] [ -v ] command ...
 
 Checks out a the current repository into a temporary repository, chdirs into that repository,
 runs the command, and commits the changes. If <command> fails no changes will be committed
