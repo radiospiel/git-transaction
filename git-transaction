@@ -113,6 +113,10 @@ ensure
   set_git_config(name, old)
 end
 
+def checked_out?
+  File.directory?(".git")
+end
+
 #
 # clone the repository into a temporary directory, chdir there, 
 # yield a block, commit back if needed and reset the current
@@ -150,7 +154,9 @@ def in_cloned_repository
     end
   end
 
-  git! "reset", "--merge" if pushed_back
+  if pushed_back && checked_out?
+    git! "reset", "--merge" 
+  end
 end
 
 $exitstatus = 0
