@@ -1,0 +1,65 @@
+# git-transaction: Transaction support for git
+
+If you use git for "something else" besides just source code management, you might want to 
+have something "transaction"-like, i.e.:
+
+  - to start a transaction in an area which is not affected by any changes to the main repository.
+  - commit all changes when ending the transaction
+
+git-transaction does just that. It clones the current repositories HEAD into a temporary directory,
+runs a command in that directory, and if that command does not fail (as per exit code) and changes
+some things in the directory, it reflects all changes in a commit which is then pushed back to the
+original repository.
+
+## Why would you do this?
+
+git has some advantages over "real" database solutions. First, you don't need a server process. 
+Secondly, you can push around your "database" to scale horizontally. And finally git can calculate
+differences between versions quite easily - a task that requires some heavy user code for regular
+databases.
+
+## How to install git-transaction
+
+Installing is as easy as
+
+    cp git-transaction /usr/local/bin
+
+or just run `rake install`, which does just that.
+
+## Examples
+
+    TBD
+
+## Usage
+
+    git-transaction --help
+
+Note that this calls the "git-transaction" script directy, while the regular use would
+be "git transaction".
+
+    git transaction [ -b basedir ] [ --readonly ] [ --no-symlinks ] [ -m message ] [ -v ] command ...
+
+    Options are:
+
+      --basedir, -b <s>:   Create the temporary repository below this directory. (Default: $TMPDIR)
+         --readonly, -r:   Do not commit changes back into the repository.
+          --message, -m:   Commit message
+          --verbose, -v:   Be verbose
+      --skip-mtimes, -s:   Don't sync mtimes
+            --debug, -D:   Be more verbose
+             --help, -h:   Show this message
+
+### --basedir: Check out into a specific place
+
+The `--basedir` option allows you to determine where the temporary directory will reside. Especially
+for larger repositories you might want to consider putting the temporary repository into a RAM-disk.
+
+### --readonly: ignore changes
+
+The `--readonly` option prevents writing changes back into the repository.
+
+### --skip-mtimes: Don't sync mtimes
+
+git does not check out the mtimes of its files per default. As you might need the mtimes though, 
+the git-transaction script sets the mtimes of all files to when they were last modified in the 
+repository. If you don't need this information you can prevent this step via "--skip-mtimes".
