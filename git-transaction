@@ -26,7 +26,7 @@ Options are:
   opt :basedir,     "Create the temporary repository below this directory. (Default: $TMPDIR)", :type => String
   opt :readonly,    "Do not commit changes back into the repository."
   # opt :no_symlinks, "Remove danglink symlinks before committing the changes."
-  opt :message,     "Commit message"
+  opt :message,     "Commit message", :type => String
   opt :verbose,     "Be verbose"
   opt :skip_mtimes, "Don't sync mtimes"
   opt :debug,       "Be more verbose", :short => "D"
