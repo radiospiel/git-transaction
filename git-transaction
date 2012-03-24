@@ -150,7 +150,20 @@ def sync_mtimes
 
   LOGGER.info "Synced mtimes for #{cnt} files"
 end
-   
+
+def in_tmp_dir(&block)
+  path = Dir.mktmpdir ["git-transaction", "d"], OPTIONS[:basedir]
+  Dir.chdir(path) do
+    yield
+  end
+ensure
+  if OPTIONS[:debug]
+    LOGGER.debug "Keeping transaction repository in #{path}"
+  else
+    FileUtils.remove_entry_secure(path)
+  end
+end
+     
 #
 # clone the repository into a temporary directory, chdir there, 
 # yield a block, commit back if needed and reset the current
@@ -159,8 +172,7 @@ def in_cloned_repository
   origin = Dir.getwd
   pushed_back = false
   
-  Dir.mktmpdir(["git-transaction", "d"], OPTIONS[:basedir]) do |dir|
-    Dir.chdir(dir) do
+  in_tmp_dir do
       LOGGER.info "In #{Dir.getwd}:"
       git! "clone", origin, "."
 
@@ -185,7 +197,6 @@ def in_cloned_repository
 
         pushed_back = true
       end
-    end
   end
 
   if pushed_back && checked_out?
