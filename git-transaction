@@ -28,6 +28,7 @@ Options are:
   # opt :no_symlinks, "Remove danglink symlinks before committing the changes."
   opt :message,     "Commit message"
   opt :verbose,     "Be verbose"
+  opt :skip_mtimes, "Don't sync mtimes"
   opt :debug,       "Be more verbose", :short => "D"
 
   stop_on_unknown
@@ -117,6 +118,38 @@ def checked_out?
   File.directory?(".git")
 end
 
+def sync_mtimes
+  mtimes = {}
+
+  cmd = %w(git log --name-only --date=iso --reverse --pretty=format:%at)
+
+  IO.popen(cmd) do |io|
+    time = nil
+    begin
+      while line = io.readline
+        line.chomp!
+
+        if !time          then time = Time.at(line.to_i)
+        elsif line == ""  then time = nil
+        else                   mtimes[line] = time
+        end
+      end
+    rescue EOFError
+    end
+  end
+
+  cnt = 0
+  mtimes.each do |file, time|
+    begin
+      File.utime time, time, file
+      cnt += 1
+    rescue Errno::ENOENT
+    end
+  end
+
+  LOGGER.info "Synced mtimes for #{cnt} files"
+end
+   
 #
 # clone the repository into a temporary directory, chdir there, 
 # yield a block, commit back if needed and reset the current
@@ -166,6 +199,8 @@ $exitstatus = 0
 # not a bare repository.
 with_git_config "receive.denyCurrentBranch", "ignore" do
   in_cloned_repository do
+    sync_mtimes unless OPTIONS[:skip_mtimes]
+    
     LOGGER.info escaped_command(*ARGV)
     system(*ARGV)
     $exitstatus = $?.exitstatus
