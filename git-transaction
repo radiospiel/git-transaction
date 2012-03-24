@@ -1,4 +1,13 @@
 #!/usr/bin/env ruby
+# git-transaction -- adds transaction to git
+#
+# Author::    Enrico Thierbach (mailto: eno@open-lab.org)
+# Copyright:: Copyright 2012 Enrico Thierbach
+# License::   the same terms as ruby itself
+#
+# Note: this file uses the trollop.rb code. That code is integrated into
+# this file (see below under __END__). The Copyright for the trollop.rb
+# is Copyright 2007 William Morgan - see below.
 require 'tmpdir'
 require 'logger'
 
