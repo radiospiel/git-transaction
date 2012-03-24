@@ -188,7 +188,7 @@ def in_cloned_repository
   end
 
   if pushed_back && checked_out?
-    git! "reset", "--merge" 
+    git! "reset", "--hard" 
   end
 end
 
