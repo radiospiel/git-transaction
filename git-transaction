@@ -18,7 +18,7 @@ runs the command, and commits the changes. If <command> fails no changes will be
 back into the repository.
 
 This is probably not useful for interactive workflows, but can be of tremendous help for
-automated data processing which uses git! to some extent.
+automated data processing which uses git to some extent.
  
 Options are:
   EOS
