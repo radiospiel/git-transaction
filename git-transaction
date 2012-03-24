@@ -154,7 +154,7 @@ end
 def in_tmp_dir(&block)
   path = Dir.mktmpdir ["git-transaction", "d"], OPTIONS[:basedir]
   Dir.chdir(path) do
-    yield
+    yield path
   end
 ensure
   if OPTIONS[:debug]
@@ -172,31 +172,25 @@ def in_cloned_repository
   origin = Dir.getwd
   pushed_back = false
   
-  in_tmp_dir do
-      LOGGER.info "In #{Dir.getwd}:"
-      git! "clone", origin, "."
+  in_tmp_dir do |dir|
+    LOGGER.info "In #{dir}:"
+    git! "clone", origin, "."
 
-      yield
+    yield
 
-      next if OPTIONS[:readonly] 
+    next if OPTIONS[:readonly] 
 
-      unless diff? || unstaged_files?
-        LOGGER.debug "No changes"
-        next
-      end
+    if $exitstatus != 0
+      LOGGER.info "Don't commit: exit code is #{$exitstatus}"
+    elsif !diff? && !unstaged_files?
+      LOGGER.debug "No changes"
+    else
+      git! "add", "--all", "."
+      git! "commit", "-m", OPTIONS[:message]
+      git! "push", "--quiet", origin, "master"
 
-      if $exitstatus != 0
-        LOGGER.info "Don't commit: exit code is #{$exitstatus}"
-        next
-      end
-
-      if !OPTIONS[:readonly] && $exitstatus == 0 && (diff? || unstaged_files?)
-        git! "add", "--all", "."
-        git! "commit", "-m", OPTIONS[:message]
-        git! "push", "--quiet", origin, "master"
-
-        pushed_back = true
-      end
+      pushed_back = true
+    end
   end
 
   if pushed_back && checked_out?
