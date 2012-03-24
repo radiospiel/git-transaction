@@ -53,11 +53,7 @@ LOGGER = Logger.new(STDERR).tap do |logger|
     else                            Logger::WARN
     end
 
-  logger.formatter = if OPTIONS[:debug]
-      proc { |_, _, _, msg| "[#{Dir.getwd}]: #{msg}\n" }
-    else
-      proc { |_, _, _, msg| "*** #{msg}\n" }
-    end
+  logger.formatter = proc { |_, _, _, msg| "*** #{msg}\n" }
 end
 
 # (4) -- some helpers -------------------------------------------------
