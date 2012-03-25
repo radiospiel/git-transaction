@@ -15,7 +15,7 @@
 git-transaction \- Adds transactions to git
 .SH "SYNOPSIS"
 
-git-transaction [ -b basedir ] [ --readonly ] [ --no-symlinks ] [ -m message ] [ -v ] command ...
+git-transaction [ -b basedir ] [ -r repository ] [ --readonly ] [ --no-symlinks ] [ -m message ] [ -v ] command ...
 
 .SH "DESCRIPTION"
 .sp
@@ -32,6 +32,11 @@ automated data processing which uses git to some extent.
 \-\-basedir, \-b <basedir>
 .RS 4
 Create the temporary repository below this directory. (Default: $TMPDIR)
+.RE
+.PP
+\-\-repository, \-r <repository>
+.RS 4
+Work with specified repository
 .RE
 .PP
 \-\-readonly, \-r

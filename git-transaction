@@ -33,6 +33,7 @@ Options are:
   EOS
   
   opt :basedir,     "Create the temporary repository below this directory. (Default: $TMPDIR)", :type => String
+  opt :repository,  "Work with specified repository", :type => String
   opt :readonly,    "Do not commit changes back into the repository."
   # opt :no_symlinks, "Remove danglink symlinks before committing the changes."
   opt :message,     "Commit message", :type => String
@@ -213,16 +214,26 @@ end
 
 $exitstatus = 0
 
+def in_repository(&block)
+  if OPTIONS[:repository]
+    Dir.chdir(OPTIONS[:repository], &block)
+  else
+    yield
+  end
+end
+
 # temporarily fix receive.denyCurrentBranch setting. This is required
 # to be able to push back into the main repository, if that one is
 # not a bare repository.
-with_git_config "receive.denyCurrentBranch", "ignore" do
-  in_cloned_repository do
-    sync_mtimes unless OPTIONS[:skip_mtimes]
-    
-    LOGGER.info escaped_command(*ARGV)
-    system(*ARGV)
-    $exitstatus = $?.exitstatus
+in_repository do
+  with_git_config "receive.denyCurrentBranch", "ignore" do
+    in_cloned_repository do
+      sync_mtimes unless OPTIONS[:skip_mtimes]
+
+      LOGGER.info escaped_command(*ARGV)
+      system(*ARGV)
+      $exitstatus = $?.exitstatus
+    end
   end
 end
 
