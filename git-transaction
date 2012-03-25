@@ -104,6 +104,8 @@ def unstaged_files?
 end
 
 def set_git_config(name, value)
+  return if bare?
+  
   if !value || value == ""
     git "config", "--unset", name
   else
@@ -112,6 +114,8 @@ def set_git_config(name, value)
 end
 
 def get_git_config(name)
+  return if bare?
+  
   `git config #{name}`.chomp
 end
 
@@ -124,8 +128,8 @@ ensure
   set_git_config(name, old)
 end
 
-def checked_out?
-  File.directory?(".git")
+def bare?
+  !File.directory?(".git")
 end
 
 def sync_mtimes
@@ -202,7 +206,7 @@ def in_cloned_repository
     end
   end
 
-  if pushed_back && checked_out?
+  if pushed_back && !bare?
     git! "reset", "--hard" 
   end
 end
